@@ -1,0 +1,49 @@
+app-id: com.github.fasttube.CamRecordSim
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+command: cam_record_sim
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=all  # Für Kamera-Zugriff
+  - --filesystem=home  # Für Aufnahmen speichern/laden
+  - --share=network  # Falls benötigt
+
+modules:
+  - name: opencv
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DBUILD_LIST=core,imgproc,imgcodecs,videoio
+      - -DBUILD_EXAMPLES=OFF
+      - -DBUILD_TESTS=OFF
+      - -DBUILD_PERF_TESTS=OFF
+      - -DWITH_GTK=OFF
+      - -DWITH_FFMPEG=ON
+    sources:
+      - type: archive
+        url: https://github.com/opencv/opencv/archive/4.8.0.tar.gz
+        sha256: cbf47ecc336d2bff36b0dcd7d6c179a9bb59e805136af6b9670ca944aef889bd
+
+  - name: cam_record_sim
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/cam_record_sim/cargo
+    build-commands:
+      - cargo --offline fetch --manifest-path Cargo.toml --verbose
+      - cargo --offline build --release --verbose
+      - install -Dm755 ./target/release/cam_record_sim -t /app/bin/
+      - install -Dm644 packaging/cam_record_sim.desktop /app/share/applications/com.github.fasttube.CamRecordSim.desktop
+      - install -Dm644 packaging/cam_record_sim.appdata.xml /app/share/metainfo/com.github.fasttube.CamRecordSim.appdata.xml
+      - install -Dm644 packaging/icon.png /app/share/icons/hicolor/256x256/apps/com.github.fasttube.CamRecordSim.png
+    sources:
+      - type: dir
+        path: ..
+      - cargo-sources.json

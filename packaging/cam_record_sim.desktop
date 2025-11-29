@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Camera Record Simulator
+GenericName=Camera Recording Tool
+Comment=Record from real and virtual cameras
+Exec=cam_record_sim
+Icon=cam_record_sim
+Terminal=false
+Categories=AudioVideo;Video;Recorder;
+Keywords=camera;recording;video;simulation;
+StartupNotify=true

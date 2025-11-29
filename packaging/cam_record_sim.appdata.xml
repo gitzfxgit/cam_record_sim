@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.github.fasttube.CamRecordSim</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Camera Record Simulator</name>
+  <summary>Record from real and virtual cameras</summary>
+
+  <description>
+    <p>
+      Camera Record Simulator is a versatile tool for recording video from both
+      real USB cameras and virtual simulated cameras. Perfect for testing and
+      development without requiring physical camera hardware.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Record from real USB cameras</li>
+      <li>Two virtual cameras for testing</li>
+      <li>Video playback capabilities</li>
+      <li>Metadata tracking for recordings</li>
+      <li>CLI and GUI interfaces</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">cam_record_sim.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main application window</caption>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://github.com/fasttube/cam_record_sim</url>
+  <url type="bugtracker">https://github.com/fasttube/cam_record_sim/issues</url>
+
+  <provides>
+    <binary>cam_record_sim</binary>
+  </provides>
+
+  <releases>
+    <release version="0.1.0" date="2024-01-01">
+      <description>
+        <p>Initial release</p>
+      </description>
+    </release>
+  </releases>
+
+  <content_rating type="oars-1.1" />
+</component>

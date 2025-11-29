@@ -1,0 +1,6 @@
+# Placeholder for icon.png
+# You should replace this with an actual 256x256 PNG icon
+# For now, you can generate one using:
+# convert -size 256x256 xc:blue -pointsize 48 -fill white -gravity center -annotate +0+0 "CAM" icon.png
+
+# Or use any camera icon from icon packs
