@@ -1,5 +1,5 @@
 use nokhwa::pixel_format::RgbFormat;
-use nokhwa::utils::{CameraIndex, RequestedFormat, RequestedFormatType};
+use nokhwa::utils::{CameraIndex, RequestedFormat, RequestedFormatType, Resolution};
 use nokhwa::Camera;
 use std::sync::{Arc, Mutex};
 use thiserror::Error;
@@ -25,7 +25,10 @@ impl CameraDevice {
     pub fn new(index: u32) -> Result<Self> {
         let requested = RequestedFormat::new::<RgbFormat>(RequestedFormatType::AbsoluteHighestFrameRate);
 
-        let camera = Camera::new(CameraIndex::Index(index), requested)
+        let mut camera = Camera::new(CameraIndex::Index(index), requested)
+            .map_err(|e| CameraError::OpenError(e.to_string()))?;
+
+        camera.set_resolution(nokhwa::utils::Resolution::new(640, 480))
             .map_err(|e| CameraError::OpenError(e.to_string()))?;
 
         Ok(Self {
@@ -48,7 +51,10 @@ impl CameraDevice {
             .frame()
             .map_err(|e| CameraError::FrameError(e.to_string()))?;
 
-        Ok(frame.buffer().to_vec())
+        let decoded = frame.decode_image::<nokhwa::pixel_format::RgbFormat>()
+            .map_err(|e| CameraError::FrameError(e.to_string()))?;
+
+        Ok(decoded.into_flat_samples().samples)
     }
 
     pub fn get_index(&self) -> u32 {

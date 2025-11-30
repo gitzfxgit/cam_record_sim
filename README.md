@@ -218,10 +218,13 @@ Alle Funktionen sind auch über die Kommandozeile verfügbar:
 
 #### Aufnahme-Pipeline
 ```
-appsrc → videoconvert → openh264enc → h264parse → mp4mux → filesink
+appsrc → videoconvert → video/x-raw,format=I420 → openh264enc → h264parse → mp4mux → filesink
 ```
 
 **Parameter**:
+- Input: RGB Frames von Kamera
+- `videoconvert`: Konvertiert RGB zu I420 (YUV)
+- `video/x-raw,format=I420`: Explizite I420-Caps (erforderlich für openh264enc)
 - `openh264enc bitrate=2000000`: 2 Mbps Bitrate für gute Qualität
 - `h264parse`: Konvertiert byte-stream zu avc format für mp4mux
 - `video/x-h264,stream-format=avc`: AVC Format für MP4-Container
@@ -330,10 +333,14 @@ MP4-Datei → PlaybackCamera → get_frame() → Live-Preview (GUI)
 - **Ursache**: openh264enc gibt byte-stream aus, mp4mux braucht avc format
 - **Lösung**: h264parse zwischen openh264enc und mp4mux einfügen
 
+**Fehler 3**: `[OpenH264] Error:CWelsH264SVCEncoder::EncodeFrame(), cmInitParaError`
+- **Ursache**: openh264enc akzeptiert nur I420 (YUV), nicht RGB
+- **Lösung**: Explizite I420-Caps nach videoconvert setzen
+
 **Finale Pipeline**:
 ```rust
 let pipeline_str = format!(
-    "appsrc name=src ! videoconvert ! openh264enc bitrate=2000000 ! h264parse ! video/x-h264,stream-format=avc ! mp4mux ! filesink location={}",
+    "appsrc name=src ! videoconvert ! video/x-raw,format=I420 ! openh264enc bitrate=2000000 ! h264parse ! video/x-h264,stream-format=avc ! mp4mux ! filesink location={}",
     output_path
 );
 ```

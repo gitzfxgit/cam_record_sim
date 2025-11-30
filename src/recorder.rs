@@ -65,7 +65,7 @@ impl VideoRecorder {
         let output_path = output_dir.join(&filename);
 
         let pipeline_str = format!(
-            "appsrc name=src ! videoconvert ! openh264enc bitrate=2000000 ! h264parse ! video/x-h264,stream-format=avc ! mp4mux ! filesink location={}",
+            "appsrc name=src ! videoconvert ! video/x-raw,format=I420 ! openh264enc bitrate=2000000 ! h264parse ! video/x-h264,stream-format=avc ! mp4mux ! filesink location={}",
             output_path.to_str().unwrap()
         );
 
@@ -89,10 +89,14 @@ impl VideoRecorder {
 
         appsrc.set_caps(Some(&caps));
         appsrc.set_property("format", gst::Format::Time);
+        appsrc.set_property("is-live", true);
+        appsrc.set_property("do-timestamp", true);
 
         pipeline
             .set_state(gst::State::Playing)
             .map_err(|e| RecorderError::PipelineError(e.to_string()))?;
+
+        std::thread::sleep(std::time::Duration::from_millis(100));
 
         Ok(Self {
             pipeline,
@@ -134,8 +138,15 @@ impl VideoRecorder {
         }
 
         let mut count = self.frame_count.lock().unwrap();
-        let pts = gst::ClockTime::from_seconds(*count) / (self.fps as u64);
-        buffer.get_mut().unwrap().set_pts(pts);
+        let duration_per_frame = gst::ClockTime::from_nseconds(
+            (1_000_000_000.0 / self.fps) as u64
+        );
+        let pts = duration_per_frame * (*count as u64);
+
+        let buffer_ref = buffer.get_mut().unwrap();
+        buffer_ref.set_pts(pts);
+        buffer_ref.set_duration(duration_per_frame);
+
         *count += 1;
 
         self.appsrc

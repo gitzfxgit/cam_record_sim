@@ -1,6 +1,0 @@
-- zwei cams recorden
-- safe cam to datafolder
-- record start and stop
-- record start and stop with timer
-- grafical intercace with cam feed and controlles
-- laod datafolder an display it + create virtual cams from the individual cams
