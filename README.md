@@ -402,7 +402,7 @@ MIT
 
 ## Autor
 
-FastTube Team
+Void @ FasTTube
 
 ## Version
 
