@@ -36,7 +36,7 @@ fn build_ui(app: &Application) {
     main_box.set_margin_top(10);
     main_box.set_margin_bottom(10);
 
-    let header = Label::new(Some("<big><b>Dual-Kamera Aufnahme und Simulation</b></big>"));
+    let header = Label::new(Some("<big><b>Dual-Camera Recording and Simulation</b></big>"));
     header.set_use_markup(true);
     main_box.append(&header);
 
@@ -47,13 +47,13 @@ fn build_ui(app: &Application) {
     let recorder = Rc::new(RefCell::new(DualCameraRecorder::new()));
 
     let record_tab = create_dual_record_tab(recorder.clone());
-    notebook.append_page(&record_tab, Some(&Label::new(Some("Aufnahme"))));
+    notebook.append_page(&record_tab, Some(&Label::new(Some("Recording"))));
 
     let simulation_tab = create_simulation_tab();
     notebook.append_page(&simulation_tab, Some(&Label::new(Some("Simulation"))));
 
     let playback_tab = create_playback_tab();
-    notebook.append_page(&playback_tab, Some(&Label::new(Some("Wiedergabe"))));
+    notebook.append_page(&playback_tab, Some(&Label::new(Some("Playback"))));
 
     main_box.append(&notebook);
 
@@ -72,32 +72,32 @@ fn create_dual_record_tab(recorder: Rc<RefCell<DualCameraRecorder>>) -> Box {
 
     let left_col = Box::new(Orientation::Vertical, 5);
 
-    let desc_label = Label::new(Some("<b>Echte Kamera(s) aufnehmen:</b>"));
+    let desc_label = Label::new(Some("<b>Record from real camera(s):</b>"));
     desc_label.set_use_markup(true);
     desc_label.set_xalign(0.0);
     left_col.append(&desc_label);
 
-    let info_label = Label::new(Some("<i>Wähle, wie viele Kameras du aufnehmen möchtest</i>"));
+    let info_label = Label::new(Some("<i>Choose how many cameras you want to record from</i>"));
     info_label.set_use_markup(true);
     info_label.set_xalign(0.0);
     left_col.append(&info_label);
 
     let cam_count_box = Box::new(Orientation::Horizontal, 5);
-    let cam_count_label = Label::new(Some("Anzahl Kameras:"));
+    let cam_count_label = Label::new(Some("Number of Cameras:"));
     let camera_count = ComboBoxText::new();
-    camera_count.append(Some("1"), "1 Kamera");
-    camera_count.append(Some("2"), "2 Kameras");
+    camera_count.append(Some("1"), "1 Camera");
+    camera_count.append(Some("2"), "2 Cameras");
     camera_count.set_active(Some(0));
     cam_count_box.append(&cam_count_label);
     cam_count_box.append(&camera_count);
     left_col.append(&cam_count_box);
 
     let cam_ids_box = Box::new(Orientation::Horizontal, 5);
-    let cam0_label = Label::new(Some("Kamera 0 ID:"));
+    let cam0_label = Label::new(Some("Camera 0 ID:"));
     let cam0_spin = SpinButton::with_range(0.0, 10.0, 1.0);
     cam0_spin.set_value(0.0);
 
-    let cam1_label = Label::new(Some("Kamera 1 ID:"));
+    let cam1_label = Label::new(Some("Camera 1 ID:"));
     let cam1_spin = SpinButton::with_range(0.0, 10.0, 1.0);
     cam1_spin.set_value(1.0);
     cam1_label.set_visible(false);
@@ -129,7 +129,7 @@ fn create_dual_record_tab(recorder: Rc<RefCell<DualCameraRecorder>>) -> Box {
     left_col.append(&fps_box);
 
     let duration_box = Box::new(Orientation::Horizontal, 5);
-    let duration_label = Label::new(Some("Dauer (Sek):"));
+    let duration_label = Label::new(Some("Duration (sec):"));
     let duration_spin = SpinButton::with_range(1.0, 300.0, 1.0);
     duration_spin.set_value(10.0);
     duration_box.append(&duration_label);
@@ -137,7 +137,7 @@ fn create_dual_record_tab(recorder: Rc<RefCell<DualCameraRecorder>>) -> Box {
     left_col.append(&duration_box);
 
     let output_box = Box::new(Orientation::Horizontal, 5);
-    let output_label = Label::new(Some("Ausgabe:"));
+    let output_label = Label::new(Some("Output:"));
     let output_entry = Entry::new();
     output_entry.set_text("recordings");
     output_entry.set_hexpand(true);
@@ -151,14 +151,14 @@ fn create_dual_record_tab(recorder: Rc<RefCell<DualCameraRecorder>>) -> Box {
 
     let button_box = Box::new(Orientation::Horizontal, 5);
 
-    let start_btn = Button::with_label("Aufnahme starten");
+    let start_btn = Button::with_label("Start Recording");
     start_btn.add_css_class("suggested-action");
 
-    let stop_btn = Button::with_label("Aufnahme stoppen");
+    let stop_btn = Button::with_label("Stop Recording");
     stop_btn.add_css_class("destructive-action");
     stop_btn.set_sensitive(false);
 
-    let status_label = Label::new(Some("Bereit"));
+    let status_label = Label::new(Some("Ready"));
     status_label.set_margin_start(20);
 
     button_box.append(&start_btn);

@@ -1,134 +1,121 @@
 # Camera Record Simulator
 
-Dual-Kamera Aufnahme- und Simulationssystem mit GTK4 GUI. Nimmt von echten Kameras auf und spielt die Aufnahmen in einer Endlosschleife als virtuelle Kameras ab - perfekt für Stereo-Vision Entwicklung und Tests ohne Hardware.
+Dual-camera recording and simulation system with GTK4 GUI. Records from real cameras and plays back recordings in an endless loop as virtual cameras - perfect for stereo vision development and testing without hardware.
 
-## Überblick
+## Overview
 
-Dieses Programm bietet zwei Hauptfunktionen:
+This program provides two main functions:
 
-1. **Aufnahme-Tab**: Zeichnet von 1-2 echten Kameras auf und speichert Videos in einem konfigurierbaren Ordner
-2. **Simulations-Tab**: Lädt aufgenommene Videos und spielt sie in einer Schleife ab, als wären 2 echte Kameras angeschlossen
+1. **Recording Tab**: Records from 1-2 real cameras and saves videos to a configurable folder
+2. **Simulation Tab**: Loads recorded videos and plays them in a loop as if 2 real cameras were connected
 
 ## Features
 
-- **Dual-Kamera Aufnahme**: Simultane Aufnahme von zwei Kameras mit Live-Preview
-- **Video-Simulation**: Gespeicherte Videos als virtuelle Kameras abspielen (Endlosschleife)
-- **Live-Vorschau**: Echtzeit-Anzeige beider Kamera-Feeds während Aufnahme und Simulation
-- **Flexible Konfiguration**: FPS, Auflösung, Dauer und Ausgabeordner anpassbar
-- **Metadaten-Export**: Automatische JSON-Metadaten für jede Aufnahme
-- **GTK4 GUI**: Moderne, intuitive Benutzeroberfläche
-- **CLI-Unterstützung**: Vollständige Kommandozeilen-Schnittstelle
+- **Dual-Camera Recording**: Simultaneous recording from two cameras with live preview
+- **Video Simulation**: Play back saved videos as virtual cameras (endless loop)
+- **Live Preview**: Real-time display of both camera feeds during recording and simulation
+- **Flexible Configuration**: Adjustable FPS, resolution, duration, and output folder
+- **Metadata Export**: Automatic JSON metadata for each recording
+- **GTK4 GUI**: Modern, intuitive user interface
+- **CLI Support**: Complete command-line interface
 
-## Systemanforderungen
+## System Requirements
 
-### Abhängigkeiten
+### Dependencies
 
-**GStreamer** (für Video-Encoding/Decoding):
+**GStreamer** (for video encoding/decoding):
 - gstreamer
 - gstreamer-plugins-base
 - gstreamer-plugins-good
-- gstreamer-plugins-bad (enthält openh264enc für H.264 Encoding)
+- gstreamer-plugins-bad (contains openh264enc for H.264 encoding)
 
-**GTK4** (für GUI):
+**GTK4** (for GUI):
 - gtk4
 - glib
 
-**Rust** (zum Kompilieren):
+**Rust** (for compilation):
 - Rust 2024 Edition
 - cargo
 
-### Installation der Abhängigkeiten
+### Installing Dependencies
 
-**Fedora:**
+The installation script automatically detects your Linux distribution and installs all required dependencies, including Rust if not already installed:
+
 ```bash
 ./install-dependencies.sh
 ```
 
-**Ubuntu/Debian:**
-```bash
-sudo apt-get update
-sudo apt-get install \
-    gstreamer1.0-tools \
-    gstreamer1.0-plugins-base \
-    gstreamer1.0-plugins-good \
-    gstreamer1.0-plugins-bad \
-    libgstreamer1.0-dev \
-    libgstreamer-plugins-base1.0-dev \
-    libgtk-4-dev \
-    libclang-dev \
-    pkg-config
-```
+Supported distributions:
+- **Fedora / Red Hat / CentOS**
+- **Ubuntu / Debian**
+- **Arch Linux**
+- **openSUSE**
 
-**Arch Linux:**
-```bash
-sudo pacman -S gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gtk4 clang
-```
-
-## Kompilieren
+## Building
 
 ```bash
 cargo build --release
 ./target/release/cam_record_sim
 ```
 
-Oder direkt ausführen:
+Or run directly:
 ```bash
 cargo run --release
 ```
 
-## Verwendung
+## Usage
 
-### GUI-Modus (Standard)
+### GUI Mode (Default)
 
-Starte das Programm ohne Parameter:
+Start the program without parameters:
 ```bash
 ./cam_record_sim
 ```
 
-#### Aufnahme-Tab
+#### Recording Tab
 
-1. **Kamera-Auswahl**:
-   - Wähle "1 Kamera" oder "2 Kameras"
-   - Gib die Kamera-IDs an (normalerweise 0 und 1)
+1. **Camera Selection**:
+   - Choose "1 Camera" or "2 Cameras"
+   - Specify camera IDs (usually 0 and 1)
 
-2. **Einstellungen**:
-   - FPS: Frames pro Sekunde (Standard: 30)
-   - Dauer: Aufnahmedauer in Sekunden (Standard: 10)
-   - Ausgabe: Zielordner für Videos (Standard: recordings)
+2. **Settings**:
+   - FPS: Frames per second (default: 30)
+   - Duration: Recording duration in seconds (default: 10)
+   - Output: Target folder for videos (default: recordings)
 
-3. **Aufnahme**:
-   - Klicke "Aufnahme starten"
-   - Live-Vorschau zeigt beide Kamera-Feeds
-   - Videos werden mit Zeitstempel gespeichert: `camera_0__YYYYMMDD_HHMMSS.mp4`
+3. **Recording**:
+   - Click "Start Recording"
+   - Live preview shows both camera feeds
+   - Videos are saved with timestamp: `camera_0__YYYYMMDD_HHMMSS.mp4`
 
-#### Simulations-Tab
+#### Simulation Tab
 
-1. **Videos laden**:
-   - Gib den Ordner mit Aufnahmen ein (z.B. "recordings")
-   - Klicke "Laden"
-   - Die ersten beiden MP4-Dateien werden geladen:
-     - Erste Datei → Virtuelle Kamera 0 (Links)
-     - Zweite Datei → Virtuelle Kamera 1 (Rechts)
+1. **Load Videos**:
+   - Enter the folder containing recordings (e.g., "recordings")
+   - Click "Load"
+   - The first two MP4 files will be loaded:
+     - First file → Virtual Camera 0 (Left)
+     - Second file → Virtual Camera 1 (Right)
 
-2. **Simulation starten**:
-   - Klicke "Simulation starten"
-   - Beide Videos werden in einer Endlosschleife abgespielt
-   - Live-Vorschau zeigt beide Video-Feeds
-   - Die Videos können nun von anderen Anwendungen als Kamera-Input verwendet werden
+2. **Start Simulation**:
+   - Click "Start Simulation"
+   - Both videos play in an endless loop
+   - Live preview shows both video feeds
+   - Videos can now be used by other applications as camera input
 
-3. **Simulation stoppen**:
-   - Klicke "Simulation stoppen"
+3. **Stop Simulation**:
+   - Click "Stop Simulation"
 
-### CLI-Modus
+### CLI Mode
 
-Alle Funktionen sind auch über die Kommandozeile verfügbar:
+All functions are also available via command line:
 
-#### Kameras auflisten
+#### List Cameras
 ```bash
 ./cam_record_sim list-cameras
 ```
 
-#### Von echter Kamera aufnehmen
+#### Record from Real Camera
 ```bash
 ./cam_record_sim record \
     --camera 0 \
@@ -137,7 +124,7 @@ Alle Funktionen sind auch über die Kommandozeile verfügbar:
     --duration 60
 ```
 
-#### Von virtueller Test-Kamera aufnehmen
+#### Record from Virtual Test Camera
 ```bash
 ./cam_record_sim sim-record \
     --camera 0 \
@@ -146,117 +133,117 @@ Alle Funktionen sind auch über die Kommandozeile verfügbar:
     --duration 10
 ```
 
-#### Virtuelle Kameras testen
+#### Test Virtual Cameras
 ```bash
 ./cam_record_sim test-virtual --duration 5
 ```
 
-#### Aufnahmen auflisten
+#### List Recordings
 ```bash
 ./cam_record_sim list-recordings --dir recordings
 ```
 
-#### Aufnahme abspielen
+#### Play Recording
 ```bash
 ./cam_record_sim play \
     --file camera_0__20241130_120000.mp4 \
     --dir recordings
 ```
 
-## Architektur
+## Architecture
 
-### Module
+### Modules
 
 #### `main.rs`
-- CLI-Argument-Parsing mit clap
-- Haupt-Entry-Point
-- Routing zwischen GUI und CLI-Modi
+- CLI argument parsing with clap
+- Main entry point
+- Routing between GUI and CLI modes
 
 #### `gui.rs`
-- GTK4 Benutzeroberfläche
-- Drei Tabs: Aufnahme, Simulation, Wiedergabe
-- Event-Handling und UI-Updates
-- Live-Preview-Rendering
+- GTK4 user interface
+- Three tabs: Recording, Simulation, Playback
+- Event handling and UI updates
+- Live preview rendering
 
 #### `camera.rs`
-- Verwaltung echter Kameras
-- Basiert auf nokhwa-Bibliothek
-- Frame-Capturing in RGB-Format
+- Real camera management
+- Based on nokhwa library
+- Frame capturing in RGB format
 
 #### `virtual_camera.rs`
-- Generiert Test-Pattern (bewegende Farbbalken)
-- Nützlich für Tests ohne echte Hardware
-- Verschiedene Farben je Kamera-ID
+- Generates test patterns (moving color bars)
+- Useful for testing without real hardware
+- Different colors per camera ID
 
 #### `playback_camera.rs`
-- Spielt Videos als virtuelle Kameras ab
-- GStreamer-basierte Video-Dekodierung
-- Unterstützt Loop-Modus für Endlosschleife
-- `StereoPlaybackSystem`: Verwaltet linke und rechte Kamera
+- Plays videos as virtual cameras
+- GStreamer-based video decoding
+- Supports loop mode for endless playback
+- `StereoPlaybackSystem`: Manages left and right cameras
 
 #### `recorder.rs`
-- Video-Aufnahme mit GStreamer
-- H.264-Encoding (openh264enc)
-- MP4-Container
-- Frame-by-Frame-Schreiben
-- Metadaten-Export
+- Video recording with GStreamer
+- H.264 encoding (openh264enc)
+- MP4 container
+- Frame-by-frame writing
+- Metadata export
 
 #### `dual_recorder.rs`
-- Koordiniert Aufnahme von mehreren Kameras
-- Unterstützt:
-  - `CameraSource::Single`: Eine Kamera
-  - `CameraSource::Dual`: Zwei echte Kameras
-  - `CameraSource::Virtual`: Zwei Test-Kameras
-- Thread-basierte asynchrone Aufnahme
+- Coordinates recording from multiple cameras
+- Supports:
+  - `CameraSource::Single`: One camera
+  - `CameraSource::Dual`: Two real cameras
+  - `CameraSource::Virtual`: Two test cameras
+- Thread-based asynchronous recording
 
 #### `player.rs`
-- Video-Wiedergabe
-- GStreamer-basiert
-- Unterstützt MP4, AVI, MKV
+- Video playback
+- GStreamer-based
+- Supports MP4, AVI, MKV
 
 ### GStreamer Pipelines
 
-#### Aufnahme-Pipeline
+#### Recording Pipeline
 ```
 appsrc → videoconvert → video/x-raw,format=I420 → openh264enc → h264parse → mp4mux → filesink
 ```
 
-**Parameter**:
-- Input: RGB Frames von Kamera
-- `videoconvert`: Konvertiert RGB zu I420 (YUV)
-- `video/x-raw,format=I420`: Explizite I420-Caps (erforderlich für openh264enc)
-- `openh264enc bitrate=2000000`: 2 Mbps Bitrate für gute Qualität
-- `h264parse`: Konvertiert byte-stream zu avc format für mp4mux
-- `video/x-h264,stream-format=avc`: AVC Format für MP4-Container
-- Output: H.264 in MP4-Container
+**Parameters**:
+- Input: RGB frames from camera
+- `videoconvert`: Converts RGB to I420 (YUV)
+- `video/x-raw,format=I420`: Explicit I420 caps (required for openh264enc)
+- `openh264enc bitrate=2000000`: 2 Mbps bitrate for good quality
+- `h264parse`: Converts byte-stream to avc format for mp4mux
+- `video/x-h264,stream-format=avc`: AVC format for MP4 container
+- Output: H.264 in MP4 container
 
-#### Playback-Pipeline
+#### Playback Pipeline
 ```
 filesrc → decodebin → videoconvert → appsink
 ```
 
-**Parameter**:
-- `decodebin`: Automatische Format-Erkennung
-- `video/x-raw,format=RGB`: RGB-Output für Frame-Extraction
+**Parameters**:
+- `decodebin`: Automatic format detection
+- `video/x-raw,format=RGB`: RGB output for frame extraction
 
-#### Wiedergabe-Pipeline
+#### Display Pipeline
 ```
 filesrc → decodebin → videoconvert → autovideosink
 ```
 
-## Technische Details
+## Technical Details
 
-### Video-Format
+### Video Format
 
 **Encoding**:
 - Codec: H.264 (openh264enc)
 - Container: MP4
-- Pixel-Format: RGB (Input), I420 (Encoding)
-- Auflösung: 640x480 (Standard)
-- FPS: 30 (konfigurierbar)
-- Bitrate: 2 Mbps (Standard)
+- Pixel Format: RGB (input), I420 (encoding)
+- Resolution: 640x480 (default)
+- FPS: 30 (configurable)
+- Bitrate: 2 Mbps (default)
 
-**Metadaten** (JSON):
+**Metadata** (JSON):
 ```json
 {
   "camera_id": 0,
@@ -269,75 +256,75 @@ filesrc → decodebin → videoconvert → autovideosink
 }
 ```
 
-### Threading-Modell
+### Threading Model
 
-- **Haupt-Thread**: GTK Event Loop
-- **Aufnahme-Thread**: Asynchrone Kamera-Aufnahme und Video-Encoding
-- **UI-Update**: glib::timeout_add_local für Live-Preview (30 FPS)
+- **Main Thread**: GTK event loop
+- **Recording Thread**: Asynchronous camera capture and video encoding
+- **UI Update**: glib::timeout_add_local for live preview (30 FPS)
 
-### Frame-Flow
+### Frame Flow
 
-#### Aufnahme
+#### Recording
 ```
-Kamera → get_frame() → VideoRecorder → x264enc → MP4-Datei
+Camera → get_frame() → VideoRecorder → x264enc → MP4 file
          ↓
-    Live-Preview (GUI)
+    Live Preview (GUI)
 ```
 
 #### Simulation
 ```
-MP4-Datei → PlaybackCamera → get_frame() → Live-Preview (GUI)
-                                           ↓
-                                    Andere Anwendung
+MP4 file → PlaybackCamera → get_frame() → Live Preview (GUI)
+                                         ↓
+                                    Other Application
 ```
 
-## Anwendungsfälle
+## Use Cases
 
-### 1. Stereo-Vision Entwicklung
+### 1. Stereo Vision Development
 
-**Problem**: Hardware-Setup (zwei Kameras) ist unpraktisch während Entwicklung
+**Problem**: Hardware setup (two cameras) is impractical during development
 
-**Lösung**:
-1. Einmalige Aufnahme von beiden Kameras im Aufnahme-Tab
-2. Simulation der Kameras im Simulations-Tab
-3. Entwicklung mit reproduzierbaren Video-Inputs
-4. Keine Hardware mehr nötig
+**Solution**:
+1. One-time recording from both cameras in Recording tab
+2. Simulation of cameras in Simulation tab
+3. Development with reproducible video inputs
+4. No hardware needed anymore
 
 ### 2. Continuous Integration
 
-**Problem**: CI-Server haben keine Kamera-Hardware
+**Problem**: CI servers don't have camera hardware
 
-**Lösung**:
-1. Aufnahmen im Repository speichern
-2. Tests verwenden Playback-Kameras statt echter Hardware
-3. Reproduzierbare, deterministische Tests
+**Solution**:
+1. Store recordings in repository
+2. Tests use playback cameras instead of real hardware
+3. Reproducible, deterministic tests
 
-### 3. Offline-Entwicklung
+### 3. Offline Development
 
-**Problem**: Kamera-Hardware nicht immer verfügbar
+**Problem**: Camera hardware not always available
 
-**Lösung**:
-1. Aufnahmen einmal mit Hardware erstellen
-2. Später ohne Hardware weiterentwickeln
-3. Gleiche Code-Basis, simulierte Inputs
+**Solution**:
+1. Create recordings once with hardware
+2. Continue development later without hardware
+3. Same code base, simulated inputs
 
-## Problemlösungen
+## Troubleshooting
 
-### GStreamer Pipeline-Fehler
+### GStreamer Pipeline Errors
 
-**Fehler 1**: `no element "x264enc"`
-- **Ursache**: x264-Plugin nicht installiert (erfordert gst-plugins-ugly)
-- **Lösung**: openh264enc verwenden (in gst-plugins-bad enthalten)
+**Error 1**: `no element "x264enc"`
+- **Cause**: x264 plugin not installed (requires gst-plugins-ugly)
+- **Solution**: Use openh264enc (included in gst-plugins-bad)
 
-**Fehler 2**: `could not link openh264enc0 to mp4mux0`
-- **Ursache**: openh264enc gibt byte-stream aus, mp4mux braucht avc format
-- **Lösung**: h264parse zwischen openh264enc und mp4mux einfügen
+**Error 2**: `could not link openh264enc0 to mp4mux0`
+- **Cause**: openh264enc outputs byte-stream, mp4mux needs avc format
+- **Solution**: Insert h264parse between openh264enc and mp4mux
 
-**Fehler 3**: `[OpenH264] Error:CWelsH264SVCEncoder::EncodeFrame(), cmInitParaError`
-- **Ursache**: openh264enc akzeptiert nur I420 (YUV), nicht RGB
-- **Lösung**: Explizite I420-Caps nach videoconvert setzen
+**Error 3**: `[OpenH264] Error:CWelsH264SVCEncoder::EncodeFrame(), cmInitParaError`
+- **Cause**: openh264enc only accepts I420 (YUV), not RGB
+- **Solution**: Set explicit I420 caps after videoconvert
 
-**Finale Pipeline**:
+**Final Pipeline**:
 ```rust
 let pipeline_str = format!(
     "appsrc name=src ! videoconvert ! video/x-raw,format=I420 ! openh264enc bitrate=2000000 ! h264parse ! video/x-h264,stream-format=avc ! mp4mux ! filesink location={}",
@@ -345,39 +332,39 @@ let pipeline_str = format!(
 );
 ```
 
-### Kamera-Zugriff
+### Camera Access
 
 **Problem**: Permission denied
 
-**Lösung**:
+**Solution**:
 ```bash
 sudo usermod -a -G video $USER
 ```
-(Logout/Login erforderlich)
+(Logout/login required)
 
-### Fehlende GStreamer-Plugins
+### Missing GStreamer Plugins
 
-**Problem**: Element nicht gefunden (z.B. "no element 'openh264enc'")
+**Problem**: Element not found (e.g., "no element 'openh264enc'")
 
-**Lösung**: Installiere gstreamer-plugins-bad
+**Solution**: Install gstreamer-plugins-bad
 ```bash
 gst-inspect-1.0 openh264enc
 ```
 
-Verfügbare Encoder überprüfen:
+Check available encoders:
 ```bash
 gst-inspect-1.0 | grep -i enc | grep -i video
 ```
 
-## Entwicklung
+## Development
 
-### Code-Stil
+### Code Style
 
-- Keine Kommentare im Code (ausschließlich Dokumentation in README)
-- Klare, selbsterklärende Funktions- und Variablennamen
-- Modulare Struktur mit klaren Verantwortlichkeiten
+- No comments in code (documentation only in README)
+- Clear, self-explanatory function and variable names
+- Modular structure with clear responsibilities
 
-### Testen
+### Testing
 
 ```bash
 cargo test
@@ -385,7 +372,7 @@ cargo test
 
 ### Debugging
 
-GStreamer Debug-Output aktivieren:
+Enable GStreamer debug output:
 ```bash
 GST_DEBUG=3 ./cam_record_sim
 ```
@@ -396,11 +383,11 @@ GST_DEBUG=3 ./cam_record_sim
 cargo clippy
 ```
 
-## Lizenz
+## License
 
 MIT
 
-## Autor
+## Author
 
 FastTube Team
 
