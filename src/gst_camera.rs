@@ -37,12 +37,12 @@ impl GstCamera {
         // Create pipeline for Bayer camera with conversion to RGB
         let pipeline_str = format!(
             "v4l2src device=/dev/video{} ! \
-             video/x-bayer,format={},width={},height={},framerate={}/1 ! \
+             video/x-bayer,width={},height={},framerate={}/1 ! \
              bayer2rgb ! \
              videoconvert ! \
              video/x-raw,format=RGB ! \
              appsink name=sink emit-signals=true sync=false max-buffers=1 drop=true",
-            index, bayer_format, width, height, fps
+            index, width, height, fps
         );
 
         eprintln!("Creating GStreamer pipeline: {}", pipeline_str);
