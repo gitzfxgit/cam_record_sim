@@ -27,19 +27,62 @@ impl GstCamera {
         // Initialize GStreamer
         gst::init().map_err(|e| GstCameraError::InitError(e.to_string()))?;
 
+        // Auto-detect Bayer format
+        let bayer_format = detect_bayer_format(index)
+            .unwrap_or_else(|| {
+                eprintln!("Warning: Could not detect Bayer format, defaulting to RGGB");
+                "rggb".to_string()
+            });
+
         // Create pipeline for Bayer camera with conversion to RGB
-        // The Imaging Source DFK 37BUX265 outputs RGGB Bayer format
         let pipeline_str = format!(
             "v4l2src device=/dev/video{} ! \
-             video/x-bayer,format=rggb,width={},height={},framerate={}/1 ! \
+             video/x-bayer,format={},width={},height={},framerate={}/1 ! \
              bayer2rgb ! \
              videoconvert ! \
              video/x-raw,format=RGB ! \
              appsink name=sink emit-signals=true sync=false max-buffers=1 drop=true",
-            index, width, height, fps
+            index, bayer_format, width, height, fps
         );
 
         eprintln!("Creating GStreamer pipeline: {}", pipeline_str);
+
+        let pipeline = gst::parse::launch(&pipeline_str)
+            .map_err(|e| GstCameraError::PipelineError(e.to_string()))?
+            .dynamic_cast::<gst::Pipeline>()
+            .map_err(|_| GstCameraError::PipelineError("Not a pipeline".to_string()))?;
+
+        let appsink = pipeline
+            .by_name("sink")
+            .ok_or_else(|| GstCameraError::PipelineError("No appsink found".to_string()))?
+            .dynamic_cast::<gst_app::AppSink>()
+            .map_err(|_| GstCameraError::PipelineError("Not an appsink".to_string()))?;
+
+        Ok(Self {
+            pipeline,
+            appsink,
+            width,
+            height,
+        })
+    }
+
+    /// Create a GstCamera with explicit Bayer format (for advanced usage)
+    pub fn new_with_format(index: u32, width: u32, height: u32, fps: u32, bayer_format: &str) -> Result<Self> {
+        // Initialize GStreamer
+        gst::init().map_err(|e| GstCameraError::InitError(e.to_string()))?;
+
+        // Create pipeline for Bayer camera with conversion to RGB
+        let pipeline_str = format!(
+            "v4l2src device=/dev/video{} ! \
+             video/x-bayer,format={},width={},height={},framerate={}/1 ! \
+             bayer2rgb ! \
+             videoconvert ! \
+             video/x-raw,format=RGB ! \
+             appsink name=sink emit-signals=true sync=false max-buffers=1 drop=true",
+            index, bayer_format, width, height, fps
+        );
+
+        eprintln!("Creating GStreamer pipeline with format {}: {}", bayer_format, pipeline_str);
 
         let pipeline = gst::parse::launch(&pipeline_str)
             .map_err(|e| GstCameraError::PipelineError(e.to_string()))?
@@ -118,9 +161,9 @@ impl Drop for GstCamera {
     }
 }
 
-/// Check if a camera uses Bayer format by querying v4l2
-/// Returns true if the camera supports Bayer format (like The Imaging Source cameras)
-pub fn is_bayer_camera(index: u32) -> bool {
+/// Detect the Bayer format of a camera
+/// Returns the Bayer format string (e.g., "rggb", "bggr", "grbg", "gbrg") or None
+pub fn detect_bayer_format(index: u32) -> Option<String> {
     use std::process::Command;
 
     let device_path = format!("/dev/video{}", index);
@@ -132,20 +175,44 @@ pub fn is_bayer_camera(index: u32) -> bool {
     {
         Ok(out) => out,
         Err(e) => {
-            eprintln!("Failed to check if {} is Bayer camera: {}", device_path, e);
-            return false;
+            eprintln!("Failed to check Bayer format for {}: {}", device_path, e);
+            return None;
         }
     };
 
     if output.status.success() {
         let info = String::from_utf8_lossy(&output.stdout);
-        // Check if the output contains Bayer formats
-        let is_bayer = info.contains("Bayer") || info.contains("RGGB") || info.contains("RG16") || info.contains("'RGGB'");
-        if is_bayer {
-            eprintln!("Detected Bayer format camera at {}", device_path);
+
+        // Check for different Bayer formats (case-insensitive)
+        let info_lower = info.to_lowercase();
+
+        // Try to detect specific Bayer patterns
+        if info.contains("'RGGB'") || info_lower.contains("rggb") {
+            eprintln!("Detected RGGB Bayer format at {}", device_path);
+            return Some("rggb".to_string());
+        } else if info.contains("'BGGR'") || info_lower.contains("bggr") {
+            eprintln!("Detected BGGR Bayer format at {}", device_path);
+            return Some("bggr".to_string());
+        } else if info.contains("'GRBG'") || info_lower.contains("grbg") {
+            eprintln!("Detected GRBG Bayer format at {}", device_path);
+            return Some("grbg".to_string());
+        } else if info.contains("'GBRG'") || info_lower.contains("gbrg") {
+            eprintln!("Detected GBRG Bayer format at {}", device_path);
+            return Some("gbrg".to_string());
         }
-        is_bayer
-    } else {
-        false
+
+        // Generic Bayer detection as fallback
+        if info.contains("Bayer") || info.contains("RG16") {
+            eprintln!("Detected generic Bayer format at {}, defaulting to RGGB", device_path);
+            return Some("rggb".to_string());
+        }
     }
+
+    None
+}
+
+/// Check if a camera uses Bayer format by querying v4l2
+/// Returns true if the camera supports Bayer format (like The Imaging Source cameras)
+pub fn is_bayer_camera(index: u32) -> bool {
+    detect_bayer_format(index).is_some()
 }

@@ -7,7 +7,7 @@ use std::process::Command;
 use std::sync::{Arc, Mutex};
 use thiserror::Error;
 
-use crate::gst_camera::{GstCamera, is_bayer_camera};
+use crate::gst_camera::{GstCamera, is_bayer_camera, detect_bayer_format};
 
 #[derive(Error, Debug)]
 pub enum CameraError {
